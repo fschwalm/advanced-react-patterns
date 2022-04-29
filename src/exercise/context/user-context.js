@@ -67,13 +67,16 @@ function useUser() {
   return context
 }
 
-function updateUser(dispatch, user, formState) {
+async function updateUser(dispatch, user, formState) {
   dispatch({type: 'start update', updates: formState})
-  return userClient.updateUser(user, formState).then(
-    updatedUser => dispatch({type: 'finish update', updatedUser}),
-    error => dispatch({type: 'fail update', error}),
-  )
-}
 
+  try {
+    const updatedUser = await userClient.updateUser(user, formState)
+    dispatch({type: 'finish update', updatedUser})
+  } catch (error) {
+    dispatch({type: 'fail update', error})
+    throw error
+  }
+}
 
 export {UserProvider, useUser, updateUser}
