@@ -4,22 +4,26 @@
 import * as React from 'react'
 import {Switch} from '../switch'
 
+const ToggleOn = ({on, children}) => (on ? children : null)
+
+const ToggleOff = ({on, children}) => (on ? null : children)
+
+const ToggleButton = ({on, toggle, ...props}) => (
+  <Switch on={on} onClick={toggle} {...props} />
+)
+const allowedTypes = [ToggleOn, ToggleOff, ToggleButton]
+
 function Toggle({children}) {
   const [on, setOn] = React.useState(false)
   const toggle = () => setOn(!on)
 
   return React.Children.map(children, child => {
-    return typeof child.type === 'string'
-    ? child
-    : React.cloneElement(child, {on, toggle})
+    if (allowedTypes.includes(child.type)) {
+      return React.cloneElement(child, {on, toggle})
+    }
+    return child
   })
 }
-
-const ToggleOn = ({on, children}) => (on ? children : null)
-
-const ToggleOff = ({on, children}) => (on ? null : children)
-
-const ToggleButton = ({on, toggle, ...props}) => <Switch on={on} onClick={toggle} {...props} />
 
 function App() {
   return (
